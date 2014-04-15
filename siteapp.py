@@ -1,4 +1,3 @@
-import os
 from flask import Flask, request, render_template, flash, redirect, url_for
 import settings
 from mtpiufm import MtpIufmBrowser
