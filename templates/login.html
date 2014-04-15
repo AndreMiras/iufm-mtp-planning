@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-inline" role="form">
+<dl>
+  <dt>Username:
+  <dd><input type=text class="form-control" name=username value="{{ request.form.username }}">
+  <dt>Password:
+  <dd><input type=password class="form-control" name=password>
+</dl>
+  <button type="submit" class="btn">Login</button>
+</form>
+{% endblock content %}
