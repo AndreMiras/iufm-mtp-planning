@@ -4,7 +4,6 @@ import os
 import tempfile
 import mechanize
 import webbrowser
-from cred import credential
 
 # https://ent.montpellier.iufm.fr/cas/index.jsp?service=http://ent.montpellier.iufm.fr/Login
 # https://ent.montpellier.iufm.fr/cas/
@@ -32,8 +31,6 @@ class MtpIufmBrowser:
         browser = self.browser
         browser.open(self.LOGIN_URL)
         browser.select_form(name="login_form")
-        # browser.form['username'] = credential["username"]
-        # browser.form['password'] = credential["password"]
         browser.form['username'] = username
         browser.form['password'] = password
         resp = browser.submit()
@@ -62,6 +59,7 @@ class MtpIufmBrowser:
 
 
 def main():
+    from cred import credential
     mtpIufmBrowser = MtpIufmBrowser()
     mtpIufmBrowser.login(
         credential["username"],
