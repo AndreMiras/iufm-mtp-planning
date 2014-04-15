@@ -1,0 +1,8 @@
+
+Generate secret key for heroku:
+>>> import os
+>>> os.urandom(24).encode("base64")
+'OwZ4kG+0ZrYvLSa+yXHJUjyRs4IdTV2H\n'
+
+Or from the commad line:
+python -c "import os; print os.urandom(24).encode('base64')"
