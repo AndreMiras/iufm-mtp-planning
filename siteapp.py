@@ -1,3 +1,4 @@
+import urllib2
 from flask import Flask, request, render_template, flash, redirect, url_for
 import settings
 from mtpiufm import MtpIufmBrowser
@@ -23,13 +24,16 @@ def show_planning(username, password):
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if valid_login(request.form['username'],
-                       request.form['password']):
-            # return log_the_user_in(request.form['username'])
-            return show_planning(request.form['username'],
-                        request.form['password'])
-        else:
-            flash(u'Invalid username/password', 'danger')
+        try:
+            if valid_login(request.form['username'],
+                           request.form['password']):
+                # return log_the_user_in(request.form['username'])
+                return show_planning(request.form['username'],
+                            request.form['password'])
+            else:
+                flash(u'Invalid username/password.', 'danger')
+        except urllib2.URLError as e:
+            flash(u"Couldn't reach service (%s)." % e.reason, 'danger')
     # the code below is executed if the request method
     # was GET or the credentials were invalid
     return render_template('login.html')
