@@ -28,6 +28,20 @@ def show_planning(username, password):
     timetable = mtpIufmBrowser.planning()
     return render_template('planning.html', timetable=timetable)
 
+@app.route('/planning_html/', methods=['GET', 'POST'])
+def show_planning_html():
+    """
+    Used for failback and debugging purpose.
+    """
+    if request.method == 'POST':
+        username = request.form["username"]
+        password = request.form["password"]
+        mtpIufmBrowser = MtpIufmBrowser()
+        mtpIufmBrowser.login(username, password)
+        planning_html = mtpIufmBrowser.planning_html()
+        return planning_html
+    return render_template('login.html')
+
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
