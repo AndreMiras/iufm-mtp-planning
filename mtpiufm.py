@@ -5,7 +5,7 @@ import re
 import tempfile
 import mechanize
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timedelta
 from BeautifulSoup import BeautifulSoup
 
 # https://ent.montpellier.iufm.fr/cas/index.jsp?service=http://ent.montpellier.iufm.fr/Login
@@ -14,7 +14,39 @@ from BeautifulSoup import BeautifulSoup
 # https://ent.montpellier.iufm.fr/cas/?service=http://web2.montpellier.iufm.fr/WD110AWP/WD110Awp.exe/CONNECT/Planning
 # http://web2.montpellier.iufm.fr/WD110AWP/WD110Awp.exe/CONNECT/Planning
 
+class Course:
 
+    def __init__(self, datetime_from):
+        self.course_name = ""
+        self.datetime_from = datetime_from
+        self.datetime_to = datetime_from + timedelta(hours=+1)
+        self.course_location = ""
+        self.course_room = ""
+
+    def __str__(self):
+        d = {
+            "course_name": self.course_name,
+            "datetime_from": self.datetime_from,
+            "datetime_to": self.datetime_to,
+        }
+        return str(d)
+
+class TimeTable:
+
+    def __init__(self):
+        self.courses = []
+
+    def __str__(self):
+        return " ".join(str(course) for course in self.courses)
+
+    def add_course(self, course):
+        self.courses.append(course)
+
+    def courses(self):
+        """
+        Returns the list of ordered (by datetime) courses.
+        """
+        return sorted(self.courses, key=lambda x: x.datetime_from, reverse=True)
 
 class MtpIufmBrowser:
 
@@ -63,12 +95,24 @@ class MtpIufmBrowser:
         resp = browser.submit()
         return resp.read()
 
+    def planning(self):
+        timetable = TimeTable()
+        courses_parsed = self.planning_parsed()
+        for course_parsed in courses_parsed:
+            course = Course(course_parsed["datetime_from"])
+            course.datetime_to = course_parsed["datetime_to"]
+            course.course_name = course_parsed["eu_course"]
+            course.course_location = course_parsed["location"]
+            course.course_room = course_parsed["room"]
+            timetable.add_course(course)
+        return timetable
+
+
     def planning_parsed(self):
         html = self.planning_html()
         courses_dirty = self._planning_parsed_level1(html)
         courses = self._planning_parsed_level2(courses_dirty)
-        from pprint import pprint
-        pprint(courses)
+        return courses
 
     def _planning_parsed_level1(self, html):
         """
@@ -130,8 +174,8 @@ def main():
         credential["username"],
         credential["password"])
     html = mtpIufmBrowser.planning_html()
-    parsed = mtpIufmBrowser.planning_parsed()
-    print parsed
+    from pprint import pprint
+    pprint(str(mtpIufmBrowser.planning()))
     return
     f = tempfile.NamedTemporaryFile(delete=False)
     f.write(html)
