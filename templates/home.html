@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block wraptitle %}
+<div class="text-center">
+  <h1>IUFM Montpellier Planning</h1>
+</div> <!-- text-centered -->
+{% endblock wraptitle %}
+
+
+{% block content %}
+<div class="text-center">
+  <a href="{{ url_for('planning') }}"><i class="fa fa-calendar fa-6"></i></a>
+</div>
+{% endblock content %}

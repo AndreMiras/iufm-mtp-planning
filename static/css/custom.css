@@ -27,3 +27,10 @@ width: 500px;
 form#download_form {
 margin-bottom: 50px;
 }
+
+.fa.fa-5 {
+font-size: 12em;
+}
+.fa.fa-6 {
+font-size: 20em;
+}
