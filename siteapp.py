@@ -60,6 +60,23 @@ def login():
 def hello():
     return 'Hello World!'
 
+@app.route('/error500')
+def error500():
+    """
+    Testing error 500.
+    """
+    assert(False)
+    return redirect(url_for('login'))
+
+
 if __name__ == '__main__':
     app.debug = settings.DEBUG
+    if not app.debug:
+        import logging
+        from logging.handlers import SMTPHandler
+        mail_handler = SMTPHandler(settings.EMAIL_HOST,
+                                   settings.DEFAULT_FROM_EMAIL,
+                                   settings.ADMINS, EMAIL_SUBJECT_PREFIX)
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
     app.run(port=8000)
