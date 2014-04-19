@@ -22,12 +22,14 @@ class Course:
         self.datetime_to = datetime_from + timedelta(hours=+1)
         self.course_location = ""
         self.course_room = ""
+        self.teacher = ""
 
     def __str__(self):
         d = {
             "course_name": self.course_name,
             "datetime_from": self.datetime_from,
             "datetime_to": self.datetime_to,
+            "teacher": self.teacher,
         }
         return str(d)
 
@@ -101,6 +103,7 @@ class MtpIufmBrowser:
             course.course_name = course_parsed["eu_course"]
             course.course_location = course_parsed["location"]
             course.course_room = course_parsed["room"]
+            course.teacher = course_parsed["teacher"]
             timetable.add_course(course)
         return timetable
 
@@ -140,11 +143,13 @@ class MtpIufmBrowser:
 
     def _planning_parsed_level2(self, courses_dirty):
         """
-        Parses courses to split day_date_time
+        Parses courses:
+          - split day_date_time
+          - extract teacher name
         """
-        # parsing date and time
         courses = courses_dirty
         for course in courses_dirty:
+            # parsing date and time
             day_date_time = course.pop("day_date_time")
             match = re.search(r".* ((\d{1,2})/(\d{1,2})/(\d{2,4}))", day_date_time)
             date_str = match.group(1)
@@ -157,9 +162,13 @@ class MtpIufmBrowser:
             datetime_to_str = date_str + " " + time_to_str
             datetime_from = datetime.strptime(datetime_from_str, "%d/%m/%Y %Hh%M")
             datetime_to = datetime.strptime(datetime_to_str, "%d/%m/%Y %Hh%M")
+            # extracts teacher name from group + teacher
+            group_teacher = course.pop("group_teacher")
+            teacher = re.search(r".* \((.+)\)", group_teacher).group(1)
             course.update({
                 "datetime_from": datetime_from,
                 "datetime_to": datetime_to,
+                "teacher": teacher,
             })
         return courses
 

@@ -12,7 +12,7 @@ var y = date.getFullYear();
 events = [
 {% for course in timetable.courses %}
   {
-    title: "{{ course.course_name }}",
+    title: "{{ course.course_name }} ({{ course.teacher }})",
     allDay: false,
     start: new {{ course.datetime_from|to_js_date|safe }},
     end: new {{ course.datetime_to|to_js_date|safe }}
