@@ -25,6 +25,23 @@ $(document).ready(function() {
     // page is now ready, initialize the calendar...
     $('#calendar').fullCalendar({
         defaultView: 'agendaWeek',
+        // defaultView: 'basicWeek',
+        firstDay: 1, // Monday
+        minTime: 7,
+        maxTime: 21,
+        timeFormat: 'H:mm { - H:mm}', // uppercase H for 24-hour clock
+        axisFormat: 'HH:mm',
+        // slotMinutes: 30,
+        eventRender: function (event, element) {
+          element.popover({
+            placement: 'auto',
+            html: true,
+            container: 'body',
+            trigger: 'click',
+            title: event.title,
+            content: '<br />Start: ' + event.start + '<br />End: ' + event.end
+          });
+        },
         events: events
     })
 });
@@ -33,5 +50,4 @@ $(document).ready(function() {
 
 {% block content %}
 <div id='calendar'></div>
-{{ planning_html|safe }}
 {% endblock content %}
