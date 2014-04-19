@@ -111,8 +111,8 @@ class MtpIufmBrowser:
     def planning_parsed(self):
         html = self.planning_html()
         courses_dirty = self._planning_parsed_level1(html)
-        courses = self._planning_parsed_level2(courses_dirty)
-        return courses
+        courses_clean = self._planning_parsed_level2(courses_dirty)
+        return courses_clean
 
     def _planning_parsed_level1(self, html):
         """
