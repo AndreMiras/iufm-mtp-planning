@@ -61,7 +61,6 @@ class MtpIufmBrowser:
         """
         Returns True on login success.
         """
-        return True
         self.username = username
         self.password = password
         browser = self.browser
@@ -76,8 +75,6 @@ class MtpIufmBrowser:
         """
         Returns planning HTML code.
         """
-        f = open("/tmp/trash/planning_html.html")
-        return f.read()
         browser = self.browser
         # browses to planning form
         # TODO: verify we don't do things twice
@@ -87,8 +84,8 @@ class MtpIufmBrowser:
         browser.select_form(name="MENU")
         # from date -> default
         browser.form["A1"] 
-        # to date -> default
-        browser.form["A6"] 
+        # to date -> 4 weeks ahead
+        browser.form["A6"] = ['4']
         # format -> HTML
         HTML_OPTION = ["2"]
         browser.form["A4"] = HTML_OPTION
@@ -174,9 +171,6 @@ def main():
         credential["username"],
         credential["password"])
     html = mtpIufmBrowser.planning_html()
-    from pprint import pprint
-    pprint(str(mtpIufmBrowser.planning()))
-    return
     f = tempfile.NamedTemporaryFile(delete=False)
     f.write(html)
     f.close()
