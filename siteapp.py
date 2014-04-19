@@ -22,7 +22,7 @@ def valid_login(username, password):
 
 def show_planning(username, password):
     mtpIufmBrowser = MtpIufmBrowser()
-    # TODO: do not login twice (the first is in valid_login
+    # TODO: do not login twice (the first is in valid_login)
     mtpIufmBrowser.login(username, password)
     # planning_html = mtpIufmBrowser.planning_html()
     timetable = mtpIufmBrowser.planning()
