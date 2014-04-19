@@ -1,9 +1,16 @@
 import urllib2
+from time import mktime
+from datetime import datetime
 from flask import Flask, request, render_template, flash, redirect, url_for
 import settings
 from mtpiufm import MtpIufmBrowser
 app = Flask(__name__)
 app.secret_key = settings.SECRET_KEY
+
+@app.template_filter('to_js_date')
+def to_js_date(d):
+    timems = mktime(d.timetuple()) * 1000
+    return "Date(%s)" % (timems)
 
 @app.route('/')
 def index():
@@ -17,9 +24,9 @@ def show_planning(username, password):
     mtpIufmBrowser = MtpIufmBrowser()
     # TODO: do not login twice (the first is in valid_login
     mtpIufmBrowser.login(username, password)
-    planning_html = mtpIufmBrowser.planning_html()
-    # return render_template('planning.html', planning_html=planning_html)
-    return planning_html
+    # planning_html = mtpIufmBrowser.planning_html()
+    timetable = mtpIufmBrowser.planning()
+    return render_template('planning.html', timetable=timetable)
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():

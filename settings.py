@@ -1,1 +1,1 @@
-prod_settings.py
+dev_settings.py

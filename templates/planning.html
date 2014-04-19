@@ -2,6 +2,36 @@
 
 {% block title %}Planning{% endblock %}
 
+{% block extrajs %}
+<script>
+var date = new Date();
+var d = date.getDate();
+var m = date.getMonth();
+var y = date.getFullYear();
+
+events = [
+{% for course in timetable.courses %}
+  {
+    title: "{{ course.course_name }}",
+    allDay: false,
+    start: new {{ course.datetime_from|to_js_date }},
+    end: new {{ course.datetime_to|to_js_date }}
+  }
+  {% if not loop.last %},{% endif %}
+{% endfor %}
+];
+
+$(document).ready(function() {
+    // page is now ready, initialize the calendar...
+    $('#calendar').fullCalendar({
+        defaultView: 'agendaWeek',
+        events: events
+    })
+});
+</script>
+{% endblock extrajs %}
+
 {% block content %}
+<div id='calendar'></div>
 {{ planning_html|safe }}
 {% endblock content %}
