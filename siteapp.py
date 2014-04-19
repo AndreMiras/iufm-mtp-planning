@@ -10,7 +10,7 @@ app.secret_key = settings.SECRET_KEY
 @app.template_filter('to_js_date')
 def to_js_date(d):
     timems = mktime(d.timetuple()) * 1000
-    return "Date(%s)" % (timems)
+    return "Date(%i)" % (timems)
 
 @app.route('/')
 def index():
