@@ -56,16 +56,17 @@ def login():
     # was GET or the credentials were invalid
     return render_template('login.html')
 
-@app.route('/hello')
+@app.route('/hello/')
 def hello():
     return 'Hello World!'
 
-@app.route('/error500')
+@app.route('/error500/')
 def error500():
     """
     Testing error 500.
     """
-    assert(False)
+    # assert(False)
+    raise Exception("Testing error 500.")
     return redirect(url_for('login'))
 
 
