@@ -65,7 +65,10 @@ class MtpIufmBrowser:
 
     def planning_parsed(self):
         html = self.planning_html()
-        return self._planning_parsed_level1(html)
+        courses_dirty = self._planning_parsed_level1(html)
+        courses = self._planning_parsed_level2(courses_dirty)
+        from pprint import pprint
+        pprint(courses)
 
     def _planning_parsed_level1(self, html):
         """
@@ -82,9 +85,6 @@ class MtpIufmBrowser:
         universities = soup.findAll('a', {'class':'institution'})
         td_elems = soup.findAll('td', {'class':'l-5'})
         td_texts = [td.text for td in td_elems]
-        print "tds:"
-        for td in td_elems:
-            print td.text
         courses = []
         for i in range(0, len(td_texts) - 5, 5):
             course_dict = {
@@ -95,21 +95,31 @@ class MtpIufmBrowser:
                 "room": td_texts[i + 4],
             }
             courses.append(course_dict)
-        print "courses:"
-        from pprint import pprint
-        pprint(courses)
         return courses
 
     def _planning_parsed_level2(self, courses_dirty):
         """
         Parses courses to split day_date_time
         """
-        # parsing date
-        reg = r".* ((\d{1,2})/(\d{1,2})/(\d{2,4}))"
-        match = re.search(r".* (\d{1,2})/(\d{1,2})/(\d{2,4})", day_date_time)
-        date_str = match.group(1)
-        date = datetime.strptime(date_str, "%d/%m/%Y").date()
-        print re.search(reg).groups()
+        # parsing date and time
+        courses = courses_dirty
+        for course in courses_dirty:
+            day_date_time = course.pop("day_date_time")
+            match = re.search(r".* ((\d{1,2})/(\d{1,2})/(\d{2,4}))", day_date_time)
+            date_str = match.group(1)
+            date = datetime.strptime(date_str, "%d/%m/%Y").date()
+            time_from_str = re.search(r".* (\d{1,2} h \d{1,2}) &#224; (\d{1,2} h \d{1,2})", day_date_time).group(1)
+            time_from_str = time_from_str.replace(" h ", "h")
+            time_to_str = re.search(r".* (\d{1,2} h \d{1,2}) &#224; (\d{1,2} h \d{1,2})", day_date_time).group(2)
+            time_to_str = time_to_str.replace(" h ", "h")
+            datetime_from_str = date_str + " " + time_from_str
+            datetime_to_str = date_str + " " + time_to_str
+            datetime_from = datetime.strptime(datetime_from_str, "%d/%m/%Y %Hh%M")
+            datetime_to = datetime.strptime(datetime_to_str, "%d/%m/%Y %Hh%M")
+            course.update({
+                "datetime_from": datetime_from,
+                "datetime_to": datetime_to,
+            })
         return courses
 
 
