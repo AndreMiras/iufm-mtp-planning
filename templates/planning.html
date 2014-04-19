@@ -14,8 +14,8 @@ events = [
   {
     title: "{{ course.course_name }}",
     allDay: false,
-    start: new {{ course.datetime_from|to_js_date }},
-    end: new {{ course.datetime_to|to_js_date }}
+    start: new {{ course.datetime_from|to_js_date|safe }},
+    end: new {{ course.datetime_to|to_js_date|safe }}
   }
   {% if not loop.last %},{% endif %}
 {% endfor %}

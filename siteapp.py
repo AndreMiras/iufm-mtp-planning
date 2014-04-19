@@ -1,6 +1,4 @@
 import urllib2
-from time import mktime
-from datetime import datetime
 from flask import Flask, request, render_template, flash, redirect, url_for
 import settings
 from mtpiufm import MtpIufmBrowser
@@ -9,8 +7,7 @@ app.secret_key = settings.SECRET_KEY
 
 @app.template_filter('to_js_date')
 def to_js_date(d):
-    timems = mktime(d.timetuple()) * 1000
-    return "Date(%i)" % (timems)
+    return d.strftime("Date('%Y-%m-%d %H:%M:%S')")
 
 @app.route('/')
 def index():
