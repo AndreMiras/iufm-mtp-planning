@@ -128,7 +128,7 @@ class MtpIufmBrowser:
         soup = BeautifulSoup(html)
         universities = soup.findAll('a', {'class':'institution'})
         td_elems = soup.findAll('td', {'class':'l-5'})
-        td_texts = [td.text for td in td_elems]
+        td_texts = [BeautifulSoup(td.text, convertEntities=BeautifulSoup.HTML_ENTITIES).contents[0] for td in td_elems]
         courses = []
         for i in range(0, len(td_texts) - 5, 5):
             course_dict = {
@@ -152,9 +152,9 @@ class MtpIufmBrowser:
             match = re.search(r".* ((\d{1,2})/(\d{1,2})/(\d{2,4}))", day_date_time)
             date_str = match.group(1)
             date = datetime.strptime(date_str, "%d/%m/%Y").date()
-            time_from_str = re.search(r".* (\d{1,2} h \d{1,2}) &#224; (\d{1,2} h \d{1,2})", day_date_time).group(1)
+            time_from_str = re.search(r".* (\d{1,2} h \d{1,2}) \S (\d{1,2} h \d{1,2})", day_date_time).group(1)
             time_from_str = time_from_str.replace(" h ", "h")
-            time_to_str = re.search(r".* (\d{1,2} h \d{1,2}) &#224; (\d{1,2} h \d{1,2})", day_date_time).group(2)
+            time_to_str = re.search(r".* (\d{1,2} h \d{1,2}) \S (\d{1,2} h \d{1,2})", day_date_time).group(2)
             time_to_str = time_to_str.replace(" h ", "h")
             datetime_from_str = date_str + " " + time_from_str
             datetime_to_str = date_str + " " + time_to_str
