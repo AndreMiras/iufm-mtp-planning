@@ -1,9 +1,8 @@
+import os
 import urllib2
 from flask import Flask, request, render_template, flash, redirect, url_for, session
-import settings
 from mtpiufm import MtpIufmBrowser
 app = Flask(__name__)
-app.secret_key = settings.SECRET_KEY
 
 @app.template_filter('to_js_date')
 def to_js_date(d):
@@ -96,13 +95,16 @@ def error500():
 
 
 if __name__ == '__main__':
-    app.debug = settings.DEBUG
+    if os.environ.get('PRODUCTION'):
+        app.config.from_object('settings.ProductionSettings')
+    else:
+        app.config.from_object('settings.DevelopmentSettings')
     if not app.debug:
         import logging
         from logging.handlers import SMTPHandler
-        mail_handler = SMTPHandler(settings.EMAIL_HOST,
-                                   settings.DEFAULT_FROM_EMAIL,
-                                   settings.ADMINS, EMAIL_SUBJECT_PREFIX)
+        mail_handler = SMTPHandler(app.EMAIL_HOST,
+                                   app.DEFAULT_FROM_EMAIL,
+                                   app.ADMINS, app.EMAIL_SUBJECT_PREFIX)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
     app.run(port=8000)
