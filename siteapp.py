@@ -107,7 +107,4 @@ if __name__ == '__main__':
                                    app.ADMINS, app.EMAIL_SUBJECT_PREFIX)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
-    # useful for debugging in production
-    if os.environ.get('DEBUG'):
-        app.debug = True
     app.run(port=8000)
