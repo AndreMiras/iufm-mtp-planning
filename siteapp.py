@@ -1,10 +1,9 @@
 import os
 import urllib2
 from flask import Flask, request, render_template, flash, redirect, url_for, session
-from flask_mail import Mail, Message
+from flask.ext.mail import Mail, Message
 from mtpiufm import MtpIufmBrowser
 app = Flask(__name__)
-mail = Mail(app)
 
 @app.template_filter('to_js_date')
 def to_js_date(d):
@@ -108,23 +107,26 @@ def error500():
     return redirect(url_for('login'))
 
 
+# config app
+if os.environ.get('PRODUCTION'):
+    app.config.from_object('settings.ProductionSettings')
+else:
+    app.config.from_object('settings.DevelopmentSettings')
+if not app.debug:
+    import logging
+    from logging.handlers import SMTPHandler
+    mail_handler = SMTPHandler(app.config['MAIL_SERVER'],
+                               app.config['DEFAULT_FROM_EMAIL'],
+                               app.config['ADMINS'], app.config['EMAIL_SUBJECT_PREFIX'],
+                               credentials = (
+                                os.environ['SENDGRID_USERNAME'],
+                                os.environ['SENDGRID_PASSWORD']))
+    mail_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(mail_handler)
+# useful for debugging in production
+if os.environ.get('DEBUG'):
+    app.debug = True
+# config mail
+mail = Mail(app)
 if __name__ == '__main__':
-    if os.environ.get('PRODUCTION'):
-        app.config.from_object('settings.ProductionSettings')
-    else:
-        app.config.from_object('settings.DevelopmentSettings')
-    if not app.debug:
-        import logging
-        from logging.handlers import SMTPHandler
-        mail_handler = SMTPHandler(app.config['MAIL_SERVER'],
-                                   app.config['DEFAULT_FROM_EMAIL'],
-                                   app.config['ADMINS'], app.config['EMAIL_SUBJECT_PREFIX'],
-                                   credentials = (
-                                    os.environ['SENDGRID_USERNAME'],
-                                    os.environ['SENDGRID_PASSWORD']))
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
-    # useful for debugging in production
-    if os.environ.get('DEBUG'):
-        app.debug = True
     app.run(port=8000)
