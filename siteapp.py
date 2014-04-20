@@ -102,9 +102,12 @@ if __name__ == '__main__':
     if not app.debug:
         import logging
         from logging.handlers import SMTPHandler
-        mail_handler = SMTPHandler(app.EMAIL_HOST,
-                                   app.DEFAULT_FROM_EMAIL,
-                                   app.ADMINS, app.EMAIL_SUBJECT_PREFIX)
+        mail_handler = SMTPHandler(app.config['EMAIL_HOST'],
+                                   app.config['DEFAULT_FROM_EMAIL'],
+                                   app.config['ADMINS'], app.config['EMAIL_SUBJECT_PREFIX'])
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
+    # useful for debugging in production
+    if os.environ.get('DEBUG'):
+        app.debug = True
     app.run(port=8000)

@@ -6,8 +6,7 @@ class BaseSettings(object):
     EMAIL_SUBJECT_PREFIX = "[IUFM Mtp Planning] "
 
 class ProductionSettings(BaseSettings):
-    # useful for debugging in production
-    DEBUG = os.environ.get('DEBUG') and True or False
+    DEBUG = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
     ADMINS = [os.environ.get('ADMIN_EMAIL')]
     EMAIL_HOST= 'smtp.sendgrid.net'
