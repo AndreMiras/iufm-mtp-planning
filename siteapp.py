@@ -1,8 +1,10 @@
 import os
 import urllib2
 from flask import Flask, request, render_template, flash, redirect, url_for, session
+from flask_mail import Mail, Message
 from mtpiufm import MtpIufmBrowser
 app = Flask(__name__)
+mail = Mail(app)
 
 @app.template_filter('to_js_date')
 def to_js_date(d):
@@ -80,9 +82,21 @@ def logout():
     session.pop('password')
     return redirect(url_for('home'))
 
-@app.route('/hello/')
-def hello():
-    return 'Hello World!'
+@app.route('/contact/', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        subject = request.form['subject']
+        message = request.form['message']
+        sender = request.form.get('sender', app.config['DEFAULT_FROM_EMAIL'])
+        msg = Message(
+            subject=subject,
+            body=message,
+            sender=sender,
+            recipients=app.config['ADMINS'])
+        mail.send(msg)
+        flash(u'Message sent.', 'success')
+        return redirect(url_for('home'))
+    return render_template('contact.html')
 
 @app.route('/error500/')
 def error500():
@@ -102,11 +116,11 @@ if __name__ == '__main__':
     if not app.debug:
         import logging
         from logging.handlers import SMTPHandler
-        mail_handler = SMTPHandler(app.config['EMAIL_HOST'],
+        mail_handler = SMTPHandler(app.config['MAIL_SERVER'],
                                    app.config['DEFAULT_FROM_EMAIL'],
                                    app.config['ADMINS'], app.config['EMAIL_SUBJECT_PREFIX'])
         mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
+        # app.logger.addHandler(mail_handler)
     # useful for debugging in production
     if os.environ.get('DEBUG'):
         app.debug = True

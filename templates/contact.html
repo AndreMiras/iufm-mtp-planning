@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<form action="" method="post" class="form-inline" role="form">
+<dl>
+  <dt>Subject:
+  <dd><input type=text class="form-control" name=subject value="">
+  <dt>Message:
+  <dd><textarea class="form-control" cols="40" id="id_message" name="message" rows="10"></textarea>
+  <dt>Sender:
+  <dd><input type=text class="form-control" name=sender value="" placeholder="your@email.com">
+</dl>
+  <button type="submit" class="btn">Submit</button>
+</form>
+{% endblock content %}
