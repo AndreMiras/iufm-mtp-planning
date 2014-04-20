@@ -7,7 +7,7 @@ app.secret_key = settings.SECRET_KEY
 
 @app.template_filter('to_js_date')
 def to_js_date(d):
-    return d.strftime("Date('%Y-%m-%d %H:%M:%S')")
+    return d.strftime("Date('%Y/%m/%d %H:%M:%S')")
 
 def redirect_url(default='home'):
     return request.args.get('next') or \
