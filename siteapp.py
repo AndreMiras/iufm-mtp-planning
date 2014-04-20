@@ -118,9 +118,12 @@ if __name__ == '__main__':
         from logging.handlers import SMTPHandler
         mail_handler = SMTPHandler(app.config['MAIL_SERVER'],
                                    app.config['DEFAULT_FROM_EMAIL'],
-                                   app.config['ADMINS'], app.config['EMAIL_SUBJECT_PREFIX'])
+                                   app.config['ADMINS'], app.config['EMAIL_SUBJECT_PREFIX'],
+                                   credentials = (
+                                    os.environ['SENDGRID_USERNAME'],
+                                    os.environ['SENDGRID_PASSWORD']))
         mail_handler.setLevel(logging.ERROR)
-        # app.logger.addHandler(mail_handler)
+        app.logger.addHandler(mail_handler)
     # useful for debugging in production
     if os.environ.get('DEBUG'):
         app.debug = True
