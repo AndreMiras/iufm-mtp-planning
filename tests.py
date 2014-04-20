@@ -32,6 +32,15 @@ class TestMtpIufmBrowser(unittest.TestCase):
         self.assertEqual(course0['room'], "J1")
         self.assertTrue("Firstname" in course0['teacher'])
         self.assertTrue("Lastname" in course0['teacher'])
+        # level1&2 with different fixture
+        # this fixture has some extra_info column (e.g. evaluation) and an empty teacher
+        f = open("docs/planning_fixture2.html")
+        html = f.read()
+        f.close()
+        courses_dirty = self.mtpIufmBrowser._planning_parsed_level1(html)
+        courses_clean = self.mtpIufmBrowser._planning_parsed_level2(courses_dirty)
+        self.assertEqual(len(courses_dirty), 16)
+        course0 = courses_clean[0]
 
 if __name__ == '__main__':
     unittest.main()

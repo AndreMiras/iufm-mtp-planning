@@ -130,7 +130,8 @@ class MtpIufmBrowser:
         td_elems = soup.findAll('td', {'class':'l-5'})
         td_texts = [BeautifulSoup(td.text, convertEntities=BeautifulSoup.HTML_ENTITIES).contents[0] for td in td_elems]
         courses = []
-        for i in range(0, len(td_texts) - 5, 5):
+        i = 0
+        while i < len(td_texts) - 5:
             course_dict = {
                 "day_date_time": td_texts[i],
                 "group_teacher": td_texts[i + 1],
@@ -138,7 +139,16 @@ class MtpIufmBrowser:
                 "location": td_texts[i + 3],
                 "room": td_texts[i + 4],
             }
+            # sometimes another element is added just before the next datetime element
+            # so let's verify the text is the expected one (DD/MM/YYYY HH h MM \S HH h MM)
+            match = re.search(
+                r".* ((\d{1,2})/(\d{1,2})/(\d{2,4})).*(\d{1,2} h \d{1,2}) \S (\d{1,2} h \d{1,2})",
+                td_texts[i + 5])
+            if not match:
+                course_dict.update({"extra_info": td_texts[i + 5]})
+                i += 1
             courses.append(course_dict)
+            i += 5
         return courses
 
     def _planning_parsed_level2(self, courses_dirty):
@@ -164,7 +174,8 @@ class MtpIufmBrowser:
             datetime_to = datetime.strptime(datetime_to_str, "%d/%m/%Y %Hh%M")
             # extracts teacher name from group + teacher
             group_teacher = course.pop("group_teacher")
-            teacher = re.search(r".* \((.+)\)", group_teacher).group(1)
+            # teacher can be empty
+            teacher = re.search(r".* \((.*)\)", group_teacher).group(1)
             course.update({
                 "datetime_from": datetime_from,
                 "datetime_to": datetime_to,
