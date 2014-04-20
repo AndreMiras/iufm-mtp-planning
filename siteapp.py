@@ -26,19 +26,22 @@ def valid_login(username, password):
         session['password'] = password
     return valid
 
-@app.route('/planning_html/', methods=['GET', 'POST'])
+@app.route('/planning_html/')
 def show_planning_html():
     """
     Used for failback and debugging purpose.
     """
-    if request.method == 'POST':
-        username = request.form["username"]
-        password = request.form["password"]
-        mtpIufmBrowser = MtpIufmBrowser()
-        mtpIufmBrowser.login(username, password)
-        planning_html = mtpIufmBrowser.planning_html()
-        return planning_html
-    return render_template('login.html')
+    mtpIufmBrowser = MtpIufmBrowser()
+    username = session.get("username", "")
+    password = session.get("password", "")
+    # TODO[perfs]: too bad to log twice
+    if mtpIufmBrowser.login(username, password):
+        try:
+            return mtpIufmBrowser.planning_html()
+        except urllib2.URLError as e:
+            flash(u"Couldn't reach service (%s)." % e.reason, 'danger')
+            return redirect(url_for('home'))
+    return redirect(url_for('login', next=url_for("planning")))
 
 @app.route('/planning/')
 def planning():
