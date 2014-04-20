@@ -12,7 +12,7 @@ class ProductionSettings(BaseSettings):
     MAIL_SERVER = 'smtp.sendgrid.net'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_HOST_USER = os.environ.get('SENDGRID_USERNAME')
+    MAIL_USERNAME = os.environ.get('SENDGRID_USERNAME')
     MAIL_PASSWORD = os.environ.get('SENDGRID_PASSWORD')
 
 class DevelopmentSettings(BaseSettings):
