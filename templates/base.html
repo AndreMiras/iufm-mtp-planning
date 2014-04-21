@@ -36,11 +36,11 @@
           <ul class="nav navbar-nav">
             {% with home_url = url_for("home") %}
             <li class="active"><a href="/"><i class="fa fa-home"></i> Home</a></li>
-            <li><a href="#"><i class="fa fa-info-circle"></i> About</a></li>
+            <li><a href="https://github.com/AndreMiras/iufm-mtp-planning"><i class="fa fa-info-circle"></i> About</a></li>
             <li><a href="{{ url_for('contact') }}"><i class="fa fa-envelope"></i> Contact</a></li>
             <li>
             {% if not session.username %}
-            <a href="{{ url_for('login', next='/') }}"><i class="fa fa-user"></i> log in</a>
+            <a href="{{ url_for('login') }}"><i class="fa fa-user"></i> log in</a>
             {% else %}
             <a href="{{ url_for('logout') }}"><i class="fa fa-user"></i> log out ({{ session.username }})</a>
             {% endif %}

@@ -70,7 +70,7 @@ def login():
             flash(u"Couldn't reach service (%s)." % e.reason, 'danger')
             return redirect(url_for('home'))
         if valid:
-            return redirect(redirect_url())
+            return redirect(url_for('planning'))
         else:
             flash(u'Invalid username/password.', 'danger')
     return render_template('login.html')
