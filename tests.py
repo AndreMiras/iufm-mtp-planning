@@ -41,6 +41,15 @@ class TestMtpIufmBrowser(unittest.TestCase):
         courses_clean = self.mtpIufmBrowser._planning_parsed_level2(courses_dirty)
         self.assertEqual(len(courses_dirty), 16)
         course0 = courses_clean[0]
+        # level1&2 with different fixture
+        # this fixture has an empty room element
+        f = open("docs/planning_fixture3.html")
+        html = f.read()
+        f.close()
+        courses_dirty = self.mtpIufmBrowser._planning_parsed_level1(html)
+        courses_clean = self.mtpIufmBrowser._planning_parsed_level2(courses_dirty)
+        self.assertEqual(len(courses_dirty), 12)
+        course0 = courses_clean[0]
 
 if __name__ == '__main__':
     unittest.main()

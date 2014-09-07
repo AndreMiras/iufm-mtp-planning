@@ -129,21 +129,30 @@ class MtpIufmBrowser:
         universities = soup.findAll('a', {'class':'institution'})
         td_elems = soup.findAll('td', {'class':'l-5'})
         td_texts = [BeautifulSoup(td.text, convertEntities=BeautifulSoup.HTML_ENTITIES).contents[0] for td in td_elems]
+        date_regex = r".* ((\d{1,2})/(\d{1,2})/(\d{2,4})).*(\d{1,2} h \d{1,2}) \S (\d{1,2} h \d{1,2})"
         courses = []
         i = 0
         while i < len(td_texts) - 5:
+            day_date_time = td_texts[i]
+            group_teacher = td_texts[i + 1]
+            eu_course = td_texts[i + 2]
+            location = td_texts[i + 3]
+            room = td_texts[i + 4]
+            # sometimes the room isn't provided so that i + 4 will be the next date element
+            match = re.search(date_regex, room)
+            if match:
+                room = None
+                i -= 1
             course_dict = {
-                "day_date_time": td_texts[i],
-                "group_teacher": td_texts[i + 1],
-                "eu_course": td_texts[i + 2],
-                "location": td_texts[i + 3],
-                "room": td_texts[i + 4],
+                "day_date_time": day_date_time,
+                "group_teacher": group_teacher,
+                "eu_course": eu_course,
+                "location": location,
+                "room": room,
             }
             # sometimes another element is added just before the next datetime element
             # so let's verify the text is the expected one (DD/MM/YYYY HH h MM \S HH h MM)
-            match = re.search(
-                r".* ((\d{1,2})/(\d{1,2})/(\d{2,4})).*(\d{1,2} h \d{1,2}) \S (\d{1,2} h \d{1,2})",
-                td_texts[i + 5])
+            match = re.search(date_regex, td_texts[i + 5])
             if not match:
                 course_dict.update({"extra_info": td_texts[i + 5]})
                 i += 1
