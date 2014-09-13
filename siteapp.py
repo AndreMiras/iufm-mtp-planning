@@ -1,4 +1,5 @@
 import os
+import re
 import urllib2
 from flask import Flask, request, render_template, flash, redirect, url_for, session
 from flask.ext.mail import Mail, Message
@@ -81,21 +82,46 @@ def logout():
     session.pop('password')
     return redirect(url_for('home'))
 
+def is_email_address_valid(email):
+    """Validate the email address using a regex."""
+    if not re.match("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$", email):
+        return False
+    return True
+
 @app.route('/contact/', methods=['GET', 'POST'])
 def contact():
+    errors = ''
+    subject = ''
+    message = ''
+    sender = ''
     if request.method == 'POST':
         subject = request.form['subject']
         message = request.form['message']
         sender = request.form.get('sender', app.config['DEFAULT_FROM_EMAIL'])
-        msg = Message(
-            subject=subject,
-            body=message,
-            sender=sender,
-            recipients=app.config['ADMINS'])
-        mail.send(msg)
-        flash(u'Message sent.', 'success')
-        return redirect(url_for('home'))
-    return render_template('contact.html')
+        if not subject or not message or not sender:
+            errors = "All fields are required. "
+        if not errors:
+            # Validate the email address and raise an error if it is invalid
+            if not is_email_address_valid(sender):
+                errors = errors + "Please enter a valid email address."
+        if not errors:
+            msg = Message(
+                subject=subject,
+                body=message,
+                sender=sender,
+                recipients=app.config['ADMINS'])
+            mail.send(msg)
+            flash(u'Message sent.', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash(errors, 'danger')
+    data = {
+        'errors': errors,
+        'subject': subject,
+        'message': message,
+        'sender': sender,
+    }
+    return render_template('contact.html', data=data)
 
 @app.route('/error500/')
 def error500():

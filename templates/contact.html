@@ -6,11 +6,11 @@
 <form action="" method="post" class="form-inline" role="form">
 <dl>
   <dt>Subject:
-  <dd><input type=text class="form-control" name=subject value="">
+  <dd><input type=text class="form-control" name=subject value="{{ data.subject }}">
   <dt>Message:
-  <dd><textarea class="form-control" cols="40" id="id_message" name="message" rows="10"></textarea>
+  <dd><textarea class="form-control" cols="40" id="id_message" name="message" rows="10">{{ data.message }}</textarea>
   <dt>Sender:
-  <dd><input type=text class="form-control" name=sender value="" placeholder="your@email.com">
+  <dd><input type=text class="form-control" name=sender value="{{ data.sender }}" placeholder="your@email.com">
 </dl>
   <button type="submit" class="btn">Submit</button>
 </form>
