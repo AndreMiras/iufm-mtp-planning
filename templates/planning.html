@@ -12,7 +12,12 @@ var y = date.getFullYear();
 events = [
 {% for course in timetable.courses %}
   {
-    title: "{{ course.course_name }} ({{ course.teacher }})",
+    title: "{{ course.course_name|truncate(50) }} \n"
+         + "{{ course.course_room if course.course_room != None else "" }}",
+    _course_name: "{{ course.course_name }}",
+    _course_room: "{{ course.course_room }}",
+    _course_location: "{{ course.course_location }}",
+    _teacher: "{{ course.teacher }}",
     allDay: false,
     start: new {{ course.datetime_from|to_js_date|safe }},
     end: new {{ course.datetime_to|to_js_date|safe }}
@@ -55,8 +60,10 @@ $(document).ready(function() {
             html: true,
             container: 'body',
             trigger: 'click',
-            title: event.title,
-            content: '<br />Start: ' + event.start + '<br />End: ' + event.end
+            title: event._course_name,
+            content:    event._teacher
+                        + '<br />' + event._course_room
+                        + '<br />' + event._course_location
           });
         },
         events: events
